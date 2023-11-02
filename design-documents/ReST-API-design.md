@@ -122,7 +122,7 @@ Status codes:
 - 401 / unauthorized access
 - 460 / invalid time period
 
-`GET /api/ar`
+`GET /api/accounts-receivables`
 
 sample response
 
