@@ -1,6 +1,6 @@
 from db.database import Base
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float
-from datetime import date
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float, DateTime
+
 
 
 class Users(Base):
@@ -20,12 +20,13 @@ class Transactions(Base):
     __tablename__ = 'transactions'
 
     id = Column(Integer, primary_key=True, index=True)
-    type = Column(String)
+    card_type = Column(String)
+    card_number = Column(String)
     description = Column(String)
     amount = Column(Integer)
     complete = Column(Boolean, default=False)
-    owner_id = Column(Integer, ForeignKey("users.id"))
-    date = Column(date)
+    # owner_id = Column(Integer, ForeignKey("users.id"))
+    date = Column(DateTime)
 
 
 
