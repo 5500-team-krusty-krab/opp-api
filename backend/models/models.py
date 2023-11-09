@@ -1,5 +1,6 @@
 from db.database import Base
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float
+from datetime import date
 
 
 class Users(Base):
@@ -15,23 +16,19 @@ class Users(Base):
     role = Column(String)
     phone_number = Column(String)
 
-class Todos(Base):
-    __tablename__ = 'todos'
+class Transactions(Base):
+    __tablename__ = 'transactions'
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String)
+    type = Column(String)
     description = Column(String)
-    priority = Column(Integer)
+    amount = Column(Integer)
     complete = Column(Boolean, default=False)
     owner_id = Column(Integer, ForeignKey("users.id"))
+    date = Column(date)
 
 
-class GenericObject(Base):
-    __tablename__ = 'generics'
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    price = Column(Float)
 
 
 
