@@ -20,7 +20,7 @@ class Transactions(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     card_type = Column(String)
-    card_number = Column(String)
+    hashed_card_number = Column(String)
     description = Column(String)
     amount = Column(Integer)
     complete = Column(Boolean, default=False)

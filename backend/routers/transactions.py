@@ -19,6 +19,8 @@ from dotenv import load_dotenv
 
 load_dotenv()  # take environment variables from .env.
 
+bcrypt_info = CryptContext(schemes=['bcrypt'], deprecated='auto')
+
 def get_db():
     db = SessionLocal()
     try:
@@ -30,7 +32,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 # user_dependency = Annotated[dict, (Depends(get_current_user))]
 
 class ProcessTransactionRequestBody(BaseModel):
-    type: str
+    card_type: str
     card_number: str
     description: str
     amount: int
@@ -39,14 +41,12 @@ class ProcessTransactionRequestBody(BaseModel):
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def process_transaction(db: db_dependency, process_transaction_request_body: ProcessTransactionRequestBody):
 
-    # Users.query().all()
     process_transaction = Transactions(
-        card_type=process_transaction_request_body.type,
-        card_number=process_transaction_request_body.card_number,
+        card_type=process_transaction_request_body.card_type,
+        hashed_card_number=bcrypt_info.hash(process_transaction_request_body.card_number), #will implement irreversible encryption next milestone
         description=process_transaction_request_body.description,
         amount=process_transaction_request_body.amount,
-        # role=process_transaction_request_body.role,
-        complete=False, #TODO
+        complete=False, #TODO: if debit: True, if credit: False
         date = datetime.now()
     )
 
