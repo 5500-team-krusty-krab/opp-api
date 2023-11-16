@@ -7,12 +7,9 @@ class Users(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, index=True)
-    
-    first_name = Column(String)
-    surname = Column(String)
+    email = Column(String)
+    name = Column(String)
     hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
-    role = Column(String)
   
 
 class Transactions(Base):
