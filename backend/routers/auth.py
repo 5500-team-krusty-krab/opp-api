@@ -28,7 +28,7 @@ class UserSignupParam(BaseModel):
     password: str
 
 @router.post("/signup")
-async def user_signup(param: UserSignupParam, db = db_dependency):
+async def user_signup(param: UserSignupParam, db: db_dependency):
 
     #TODO validate email format
     # if invalid email format
