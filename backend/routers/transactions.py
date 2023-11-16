@@ -1,6 +1,7 @@
 from datetime import timedelta, datetime
 from validate import validate_card
 from DB import get_db
+from check_fund import check_fund_card
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -38,9 +39,18 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
         process_transaction_request_body.card_number, 
         process_transaction_request_body.card_type
     )
-    
+
     if not is_valid:
         raise HTTPException(status_code=400, detail=message)
+
+    is_sufficent, message = check_fund_card(
+        process_transaction_request_body.card_number, 
+        process_transaction_request_body.card_type,
+        process_transaction_request_body.amount
+    )
+    if not is_sufficient:
+        return {"not success": False, "message": message}
+    
 
     # If card is valid, process the transaction
     hashed_card_number = bcrypt_info.hash(process_transaction_request_body.card_number)
@@ -49,9 +59,10 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
         hashed_card_number=hashed_card_number,
         description=process_transaction_request_body.description,
         amount=process_transaction_request_body.amount,
-        date=datetime.now()
+        date=datetime.now(),
+        status=TransactionStatus.PROCESSED if process_transaction_request_body.card_type == 'debit' else TransactionStatus.PENDING,
     )
-
+ 
     db.add(new_transaction)
     db.commit()
 
@@ -61,13 +72,5 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_transactions(db: db_dependency):
     return db.query(Transactions).all()
-    
-@router.patch("/transactions/{transaction_id}", status_code=status.HTTP_200_OK)
-async def update_transaction_status(db: db_dependency, transaction_id: int, status: str):
-    transaction = db.query(Transactions).filter(Transactions.id == transaction_id).first()
-    if transaction:
-        transaction.status = status
-        db.commit()
-        return {"success": True, "message": "Transaction status updated"}
-    else:
-        raise HTTPException(status_code=404, detail="Transaction not found")
+
+

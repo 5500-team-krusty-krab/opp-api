@@ -21,7 +21,8 @@ class Transactions(Base):
     # complete = Column(Boolean, default=False)
     # owner_id = Column(Integer, ForeignKey("users.id"))
     date = Column(DateTime)
-    
+    status = Column(Enum(TransactionStatus), default=TransactionStatus.PENDING)
+
 
 
 

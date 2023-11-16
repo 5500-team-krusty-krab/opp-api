@@ -3,7 +3,7 @@ from typing import Tuple
 
 CHECK_FUNDS_AND_FRAUD_URL = "https://223didiouo3hh4krxhm4n4gv7y0pfzxk.lambda-url.us-west-2.on.aws"
 
-def validate_card(card_number: str, card_type: str, amount: float) -> Tuple[bool, str]:
+def check_fund_card(card_number: str, card_type: str, amount: float) -> Tuple[bool, str]:
     """
     Validate a credit or debit card number using a third-party API for checking funds and fraud.
     
@@ -24,11 +24,14 @@ def validate_card(card_number: str, card_type: str, amount: float) -> Tuple[bool
     data = response.json()
 
     if data.get("success") != "true":
-        return False, data.get('msg', 'card number has sufficient funds and is not fradulent')
+        return False, data.get('msg', 'card number has not sufficient funds and is fradulent')
+    
+    return True, "sufficient amount"
 
-    if card_type == 'debit':
-        return True, 'Successfully processed'
-    elif card_type == 'credit':
-        return True, 'Transaction is in pending status'
-    else:
-        return False, 'Invalid card type'
+    # if card_type == 'credit':
+    #     return False, "Card type must be a debit card"
+    # elif data.get('amt') < amount:
+    #     return False, "insufficient amount"
+    # else:
+    #     return True, "sufficient amount"
+  
