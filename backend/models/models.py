@@ -1,5 +1,12 @@
 from db.database import Base
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float, DateTime, Enum
+from enum import Enum as PyEnum
+
+class TransactionStatus(PyEnum):
+    PENDING = 'pending'
+    COMPLETED = 'completed'
+    FAILED = 'failed'
+
 
 class Users(Base):
     __tablename__ = 'users'
