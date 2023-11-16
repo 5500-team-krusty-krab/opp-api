@@ -43,7 +43,7 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
     if not is_valid:
         raise HTTPException(status_code=400, detail=message)
 
-    is_sufficent, message = check_fund_card(
+    is_sufficient, message = check_fund_card(
         process_transaction_request_body.card_number, 
         process_transaction_request_body.card_type,
         process_transaction_request_body.amount
@@ -60,7 +60,7 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
         description=process_transaction_request_body.description,
         amount=process_transaction_request_body.amount,
         date=datetime.now(),
-        status=TransactionStatus.PROCESSED if process_transaction_request_body.card_type == 'debit' else TransactionStatus.PENDING,
+        status=TransactionStatus.COMPLETED if process_transaction_request_body.card_type == 'debit' else TransactionStatus.PENDING,
     )
  
     db.add(new_transaction)
