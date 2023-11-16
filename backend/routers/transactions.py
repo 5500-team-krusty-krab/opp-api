@@ -61,3 +61,13 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_transactions(db: db_dependency):
     return db.query(Transactions).all()
+    
+@router.patch("/transactions/{transaction_id}", status_code=status.HTTP_200_OK)
+async def update_transaction_status(db: db_dependency, transaction_id: int, status: str):
+    transaction = db.query(Transactions).filter(Transactions.id == transaction_id).first()
+    if transaction:
+        transaction.status = status
+        db.commit()
+        return {"success": True, "message": "Transaction status updated"}
+    else:
+        raise HTTPException(status_code=404, detail="Transaction not found")
