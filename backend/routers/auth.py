@@ -10,6 +10,7 @@ from jose import jwt, JWTError
 from models.models import Users
 from db.database import SessionLocal
 from passlib.context import CryptContext
+from typing import Annotated
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 
@@ -25,68 +26,66 @@ def get_db():
     finally:
         db.close()
 
-db_dependency = Depends(get_db)
+db_dependency = Annotated[Session, Depends(get_db)]
 
-class UserRegistration(BaseModel):
-    first_name: str
-    last_name: str
+class UserSignupParam(BaseModel):
+    name:str
+    email: str
     password: str
-    role: str
 
-class TokenData(BaseModel):
-    access_token: str
-    token_type: str
+@router.post("/signup")
+async def user_signup(param: UserSignupParam, db = db_dependency):
 
-@router.post("/register", response_model=TokenData)
-async def register_user(user_data: UserRegistration, db: Session = db_dependency):
+    #TODO validate email format
+    # if invalid email format
+    # raise HTTP ("invalid email")
+
     existing_user = db.query(Users).filter(
-        Users.first_name == user_data.first_name,
-        Users.surname == user_data.last_name
+        Users.email == param.email,
     ).first()
     
+
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User with given name already exists."
+            detail="Email already in use."
         )
     
     user = Users(
-        first_name=user_data.first_name,
-        surname=user_data.last_name,
-        role=user_data.role,
-        hashed_password=bcrypt_context.hash(user_data.password),
-        is_active=True
+        name = param.name,
+        email = param.email,
+        hashed_password = bcrypt_context.hash(param.password),
     )
     db.add(user)
     db.commit()
     db.refresh(user)
     
-    access_token_expires = timedelta(minutes=30)
-    access_token = create_access_token(
-        data={"sub": f"{user.first_name} {user.surname}", "id": user.id},
-        expires_delta=access_token_expires
-    )
-    
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"success":True}
 
-@router.post("/token", response_model=TokenData)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = db_dependency):
-    user = authenticate_user(form_data.username, form_data.password, db)
+class UserLoginParam(BaseModel):
+    email: str
+    password: str
+
+@router.post("/login")
+async def user_login(param: UserLoginParam, db: db_dependency):
+    
+
+    user = authenticate_user(param.email, param.password, db)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect login details")
     
     access_token_expires = timedelta(minutes=30)
     access_token = create_access_token(
-        data={"sub": f"{user.first_name} {user.surname}", "id": user.id},
+        data={"email": user.email},
         expires_delta=access_token_expires
     )
     
     return {"access_token": access_token, "token_type": "bearer"}
+    
 
-def authenticate_user(first_name: str, last_name: str, password: str, db: Session):
+def authenticate_user(email: str, password: str, db: Session):
     user = db.query(Users).filter(
-        Users.first_name == first_name,
-        Users.surname == last_name
+        Users.email == email,
     ).first()
     
     if not user:
