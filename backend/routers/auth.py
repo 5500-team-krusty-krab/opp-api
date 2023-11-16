@@ -74,7 +74,13 @@ async def user_login(param: UserLoginParam, db: db_dependency):
         expires_delta=access_token_expires
     )
     
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "message": "Successfully logged in",
+        "user_info": {
+            "email": user.email,
+            "name": user.name 
+        }
+    }
     
 
 def authenticate_user(email: str, password: str, db: Session):
