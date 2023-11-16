@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime
+from validate import validate_card
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -37,25 +38,33 @@ class ProcessTransactionRequestBody(BaseModel):
     description: str
     amount: int
 
-
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def process_transaction(db: db_dependency, process_transaction_request_body: ProcessTransactionRequestBody):
+    # Validate card first
+    is_valid, message = validate_card(
+        process_transaction_request_body.card_number, 
+        process_transaction_request_body.card_type
+    )
+    
+    if not is_valid:
+        raise HTTPException(status_code=400, detail=message)
 
-    process_transaction = Transactions(
+    # If card is valid, process the transaction
+    hashed_card_number = bcrypt_info.hash(process_transaction_request_body.card_number)
+    new_transaction = Transactions(
         card_type=process_transaction_request_body.card_type,
-        hashed_card_number=bcrypt_info.hash(process_transaction_request_body.card_number), #will implement irreversible encryption next milestone
+        hashed_card_number=hashed_card_number,
         description=process_transaction_request_body.description,
         amount=process_transaction_request_body.amount,
-        complete=False, #TODO: if debit: True, if credit: False
-        date = datetime.now()
+        date=datetime.now()
     )
 
-    db.add(process_transaction)
+    db.add(new_transaction)
     db.commit()
 
-    return {"success":True}
+    return {"success": True, "message": message}
+    
 
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_transactions(db: db_dependency):
     return db.query(Transactions).all()
-

@@ -1,8 +1,6 @@
 from db.database import Base
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float, DateTime
 
-
-
 class Users(Base):
     __tablename__ = 'users'
 
@@ -23,9 +21,10 @@ class Transactions(Base):
     hashed_card_number = Column(String)
     description = Column(String)
     amount = Column(Integer)
-    complete = Column(Boolean, default=False)
+    # complete = Column(Boolean, default=False)
     # owner_id = Column(Integer, ForeignKey("users.id"))
     date = Column(DateTime)
+    
 
 
 
