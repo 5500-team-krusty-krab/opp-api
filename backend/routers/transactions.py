@@ -1,5 +1,6 @@
 from datetime import timedelta, datetime
 from validate import validate_card
+from DB import get_db
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -21,14 +22,6 @@ from dotenv import load_dotenv
 load_dotenv()  # take environment variables from .env.
 
 bcrypt_info = CryptContext(schemes=['bcrypt'], deprecated='auto')
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 db_dependency = Annotated[Session, Depends(get_db)]
 # user_dependency = Annotated[dict, (Depends(get_current_user))]
 

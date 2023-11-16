@@ -1,7 +1,5 @@
 from typing import Annotated
-
-# from pydantic import BaseModel, EmailStr
-# from passlib.context import CryptContext
+from DB import get_db
 
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
@@ -11,14 +9,6 @@ from models.models import Users
 from db.database import SessionLocal
 
 router = APIRouter(prefix='/admin', tags=['admin'])
-
-# Dependency to get the database session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # Test
 @router.get("/")

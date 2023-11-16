@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 
 from models.models import Users
+from DB import get_db
 from db.database import SessionLocal
 from passlib.context import CryptContext
 from typing import Annotated
@@ -18,13 +19,6 @@ bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl='token')
 SECRET_KEY = secrets.token_urlsafe(32)
 ALGORITHM = "HS256"
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
