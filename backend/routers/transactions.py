@@ -49,7 +49,7 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
         process_transaction_request_body.amount
     )
     if not is_sufficient:
-        return {"not success": False, "message": message}
+        return {"success": False, "message": message}
     
 
     # If card is valid, process the transaction

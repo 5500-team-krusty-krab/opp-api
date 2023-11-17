@@ -24,7 +24,7 @@ class Transactions(Base):
     card_type = Column(String)
     hashed_card_number = Column(String)
     description = Column(String)
-    amount = Column(Integer)
+    amount = Column(Float)
     # complete = Column(Boolean, default=False)
     # owner_id = Column(Integer, ForeignKey("users.id"))
     date = Column(DateTime)
