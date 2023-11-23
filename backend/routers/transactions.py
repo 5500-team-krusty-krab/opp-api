@@ -13,7 +13,9 @@ from passlib.context import CryptContext
 from db.database import SessionLocal
 from typing import Annotated, Any
 from sqlalchemy.orm import Session
-from jose import jwt, JWTError
+# from jose import jwt, JWTError
+
+from routers.auth import get_current_user
 
 router = APIRouter(prefix='/transactions', tags=['transactions'])
 
@@ -24,7 +26,7 @@ load_dotenv()  # take environment variables from .env.
 
 bcrypt_info = CryptContext(schemes=['bcrypt'], deprecated='auto')
 db_dependency = Annotated[Session, Depends(get_db)]
-# user_dependency = Annotated[dict, (Depends(get_current_user))]
+user_dependency = Annotated[dict, (Depends(get_current_user))]
 
 class ProcessTransactionRequestBody(BaseModel):
     card_type: str
@@ -33,7 +35,9 @@ class ProcessTransactionRequestBody(BaseModel):
     amount: int
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def process_transaction(db: db_dependency, process_transaction_request_body: ProcessTransactionRequestBody):
+async def process_transaction(db: db_dependency, process_transaction_request_body: ProcessTransactionRequestBody, user:user_dependency):
+    
+
     # Validate card first
     is_valid, message = validate_card(
         process_transaction_request_body.card_number, 
@@ -61,6 +65,7 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
         amount=process_transaction_request_body.amount,
         date=datetime.now(),
         status=TransactionStatus.COMPLETED if process_transaction_request_body.card_type == 'debit' else TransactionStatus.PENDING,
+        owner_id = user.id
     )
  
     db.add(new_transaction)
@@ -70,7 +75,7 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
     
 
 @router.get("/", status_code=status.HTTP_200_OK)
-async def get_transactions(db: db_dependency):
-    return db.query(Transactions).all()
+async def get_transactions(db: db_dependency,user:user_dependency):
+    return db.query(Transactions).filter_by(owner_id = user.id).all()
 
 

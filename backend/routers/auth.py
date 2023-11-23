@@ -1,5 +1,4 @@
 
-import secrets
 from datetime import timedelta, datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -17,7 +16,8 @@ router = APIRouter(prefix='/auth', tags=['auth'])
 
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl='token')
-SECRET_KEY = secrets.token_urlsafe(32)
+# SECRET_KEY = secrets.token_urlsafe(32)
+SECRET_KEY = "klajsdfkl;asjdflkjsadfklasdflk"
 ALGORITHM = "HS256"
 
 db_dependency = Annotated[Session, Depends(get_db)]
@@ -70,16 +70,13 @@ async def user_login(param: UserLoginParam, db: db_dependency):
     
     access_token_expires = timedelta(minutes=30)
     access_token = create_access_token(
-        data={"email": user.email},
+        data={"userId": user.id},
         expires_delta=access_token_expires
     )
     
     return {
         "message": "Successfully logged in",
-        "user_info": {
-            "email": user.email,
-            "name": user.name 
-        }
+        "access_token": access_token
     }
     
 
@@ -103,3 +100,13 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)], db: db_dependency):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        userId: str = payload.get('userId')
+        if userId is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate user')
+        return db.query(Users).get(userId)
+    except JWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Could not validate user')
