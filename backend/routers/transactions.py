@@ -74,8 +74,20 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
     return {"success": True, "message": message}
     
 
+
+
 @router.get("/", status_code=status.HTTP_200_OK)
-async def get_transactions(db: db_dependency,user:user_dependency):
-    return db.query(Transactions).filter_by(owner_id = user.id).all()
+async def get_transactions(db: db_dependency, user: user_dependency):
+    pending_transactions = db.query(Transactions)\
+        .filter_by(owner_id=user.id, card_type='credit', status=TransactionStatus.PENDING)\
+        .all()
 
+    for transaction in pending_transactions:
+        if datetime.now() >= transaction.pending_time + timedelta(hours=48):  
+            transaction.status = TransactionStatus.APPROVED
+            transaction.approved_time = datetime.now()
 
+    db.commit()  
+
+   
+    return db.query(Transactions).filter_by(owner_id=user.id).all()
