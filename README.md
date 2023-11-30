@@ -10,18 +10,16 @@ Attention: Docker can only run on macOS system above 12.0, no matter Apple silic
 
 #### Build Docker image
 Run in the project root directory backend
-
-Build Docker Image
 ```bash
 docker build -t myimage .
 ```
 
-Run Docker container
+#### Run Docker container
 ```bash
 docker run -d --name mycontainer -p 8000:8000 myimage
 ```
 
-Test Docker container status
+#### Test Docker container status
 ```bash
  run http://localhost:8000 at local engine
 ```
