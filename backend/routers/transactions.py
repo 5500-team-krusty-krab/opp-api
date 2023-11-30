@@ -81,8 +81,8 @@ async def get_transactions(db: db_dependency, user: user_dependency):
     pending_transactions = db.query(Transactions)\
     .filter_by(owner_id=user.id, status=TransactionStatus.PENDING)\
     .all()
-
-    return pending_transactions
+    balance = calculate_balance(pending_transactions)
+    return { "pending balance": balance, "transactions": pending_transactions}
 
 @router.get("/completed", status_code=status.HTTP_200_OK)
 async def get_transactions(db: db_dependency, user: user_dependency):
@@ -91,8 +91,9 @@ async def get_transactions(db: db_dependency, user: user_dependency):
     completed_transactions = db.query(Transactions)\
     .filter_by(owner_id=user.id, status=TransactionStatus.COMPLETED)\
     .all()
+    balance = calculate_balance(completed_transactions)
+    return { "completed balance": balance, "transactions": completed_transactions}
 
-    return completed_transactions
 
 # def update_status(db: db_dependency, user: user_dependency):
 #     pending_transactions = db.query(Transactions)\
@@ -105,6 +106,14 @@ async def get_transactions(db: db_dependency, user: user_dependency):
 #             transaction.status = TransactionStatus.COMPLETED
 #             db.execute(transaction)
 #             db.commit()
+
+def calculate_balance(data: Transactions):
+    total = 0
+    for transaction in data:
+        total += transaction.amount
+    
+    return total
+
 
 
 
