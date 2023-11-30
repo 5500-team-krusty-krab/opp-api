@@ -12,7 +12,7 @@ from db.database import SessionLocal
 from passlib.context import CryptContext
 from typing import Annotated
 
-router = APIRouter(prefix='/auth', tags=['auth'])
+router = APIRouter(tags=['auth'])
 
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl='token')

@@ -34,7 +34,7 @@ class ProcessTransactionRequestBody(BaseModel):
     description: str
     amount: int
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/new", status_code=status.HTTP_201_CREATED)
 async def process_transaction(db: db_dependency, process_transaction_request_body: ProcessTransactionRequestBody, user:user_dependency):
     
 
@@ -74,20 +74,37 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
     return {"success": True, "message": message}
     
 
-
-
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("/pending", status_code=status.HTTP_200_OK)
 async def get_transactions(db: db_dependency, user: user_dependency):
+
+    # update_status(db, user)
     pending_transactions = db.query(Transactions)\
-        .filter_by(owner_id=user.id, card_type='credit', status=TransactionStatus.PENDING)\
-        .all()
+    .filter_by(owner_id=user.id, status=TransactionStatus.PENDING)\
+    .all()
 
-    for transaction in pending_transactions:
-        if datetime.now() >= transaction.pending_time + timedelta(hours=48):  
-            transaction.status = TransactionStatus.APPROVED
-            transaction.approved_time = datetime.now()
+    return pending_transactions
 
-    db.commit()  
+@router.get("/completed", status_code=status.HTTP_200_OK)
+async def get_transactions(db: db_dependency, user: user_dependency):
 
-   
-    return db.query(Transactions).filter_by(owner_id=user.id).all()
+    # update_status(db, user)
+    completed_transactions = db.query(Transactions)\
+    .filter_by(owner_id=user.id, status=TransactionStatus.COMPLETED)\
+    .all()
+
+    return completed_transactions
+
+# def update_status(db: db_dependency, user: user_dependency):
+#     pending_transactions = db.query(Transactions)\
+#     .filter_by(owner_id=user.id, status=TransactionStatus.PENDING)\
+#     .all()
+
+#     for transaction in pending_transactions:
+#         if datetime.now() >= transaction.date + timedelta(hours=48):  
+#             # setattr(transaction, 'status', TransactionStatus.PENDING)
+#             transaction.status = TransactionStatus.COMPLETED
+#             db.execute(transaction)
+#             db.commit()
+
+
+
