@@ -25,3 +25,8 @@ models.Base.metadata.create_all(bind=engine)
 app.include_router(auth.router)
 app.include_router(transactions.router)
 app.include_router(admin.router)
+
+# Test
+@app.get("/")
+def read_root():
+    return {"Docker": "Success"}
