@@ -57,10 +57,9 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
     
 
     # If card is valid, process the transaction
-    # hashed_card_number = bcrypt_info.hash(process_transaction_request_body.card_number)
     new_transaction = Transactions(
         card_type=process_transaction_request_body.card_type,
-        card_number=process_transaction_request_body.card_number[11:],
+        card_number=process_transaction_request_body.card_number[-4:],
         description=process_transaction_request_body.description,
         amount=process_transaction_request_body.amount,
         date=datetime.now(),
@@ -80,6 +79,7 @@ async def get_transactions(db: db_dependency, user: user_dependency):
     # update_status(db, user)
     pending_transactions = db.query(Transactions)\
     .filter_by(owner_id=user.id, status=TransactionStatus.PENDING)\
+    .order_by(Transactions.date.desc())\
     .all()
     balance = calculate_balance(pending_transactions)
     return { "pendingBalance": balance, "transactions": pending_transactions}
@@ -90,6 +90,7 @@ async def get_transactions(db: db_dependency, user: user_dependency):
     # update_status(db, user)
     completed_transactions = db.query(Transactions)\
     .filter_by(owner_id=user.id, status=TransactionStatus.COMPLETED)\
+    .order_by(Transactions.date.desc())\
     .all()
     balance = calculate_balance(completed_transactions)
     return { "completedBalance": balance, "transactions": completed_transactions}
