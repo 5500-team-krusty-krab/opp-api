@@ -57,10 +57,10 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
     
 
     # If card is valid, process the transaction
-    hashed_card_number = bcrypt_info.hash(process_transaction_request_body.card_number)
+    # hashed_card_number = bcrypt_info.hash(process_transaction_request_body.card_number)
     new_transaction = Transactions(
         card_type=process_transaction_request_body.card_type,
-        hashed_card_number=hashed_card_number,
+        card_number=process_transaction_request_body.card_number[11:],
         description=process_transaction_request_body.description,
         amount=process_transaction_request_body.amount,
         date=datetime.now(),
