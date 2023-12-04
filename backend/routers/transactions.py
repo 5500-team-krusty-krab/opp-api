@@ -14,6 +14,8 @@ from db.database import SessionLocal
 from typing import Annotated, Any
 from sqlalchemy.orm import Session
 
+from datetime import datetime
+
 # from types import *
 
 from routers.auth import get_current_user
@@ -81,6 +83,8 @@ async def get_transactions(db: db_dependency, user: user_dependency,
                         end: str = None,
                         ):
 
+    
+    
     update_status(db, user)
 
     statusValue = TransactionStatus.PENDING if status == "pending" else TransactionStatus.COMPLETED
@@ -91,10 +95,12 @@ async def get_transactions(db: db_dependency, user: user_dependency,
 
 
     if start:
-        query = query.filter(Transactions.date >= start)
+        startDateTime = datetime.strptime(start,"%Y-%m-%d").replace(hour=0, minute=0, second=0)
+        query = query.filter(Transactions.date >= startDateTime)
 
     if end:
-        query = query.filter(Transactions.date <= end)
+        endDateTime = datetime.strptime(end,"%Y-%m-%d").replace(hour=23, minute=59, second=59)
+        query = query.filter(Transactions.date <= endDateTime)
     
     transactions = query.all()
     balance = calculate_balance(transactions)

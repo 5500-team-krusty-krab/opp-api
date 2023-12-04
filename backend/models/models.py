@@ -1,5 +1,5 @@
 from db.database import Base
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float, DateTime, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, DateTime, Enum
 from enum import Enum as PyEnum
 
 class TransactionStatus(PyEnum):
