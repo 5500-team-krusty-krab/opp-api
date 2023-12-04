@@ -13,7 +13,8 @@ from passlib.context import CryptContext
 from db.database import SessionLocal
 from typing import Annotated, Any
 from sqlalchemy.orm import Session
-# from jose import jwt, JWTError
+
+# from types import *
 
 from routers.auth import get_current_user
 
@@ -73,27 +74,31 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
     return {"success": True, "message": message}
     
 
-@router.get("/pending", status_code=status.HTTP_200_OK)
-async def get_transactions(db: db_dependency, user: user_dependency):
+@router.get("/", status_code=status.HTTP_200_OK)
+async def get_transactions(db: db_dependency, user: user_dependency,
+                        status: str = "completed",
+                        start: str = None, 
+                        end: str = None,
+                        ):
 
     update_status(db, user)
-    pending_transactions = db.query(Transactions)\
-    .filter_by(owner_id=user.id, status=TransactionStatus.PENDING)\
-    .order_by(Transactions.date.desc())\
-    .all()
-    balance = calculate_balance(pending_transactions)
-    return { "pendingBalance": balance, "transactions": pending_transactions}
 
-@router.get("/completed", status_code=status.HTTP_200_OK)
-async def get_transactions(db: db_dependency, user: user_dependency):
+    statusValue = TransactionStatus.PENDING if status == "pending" else TransactionStatus.COMPLETED
+    
+    query = db.query(Transactions)\
+        .filter_by(owner_id=user.id, status=statusValue)\
+        .order_by(Transactions.date.desc())
 
-    update_status(db, user)
-    completed_transactions = db.query(Transactions)\
-    .filter_by(owner_id=user.id, status=TransactionStatus.COMPLETED)\
-    .order_by(Transactions.date.desc())\
-    .all()
-    balance = calculate_balance(completed_transactions)
-    return { "completedBalance": balance, "transactions": completed_transactions}
+
+    if start:
+        query = query.filter(Transactions.date >= start)
+
+    if end:
+        query = query.filter(Transactions.date <= end)
+    
+    transactions = query.all()
+    balance = calculate_balance(transactions)
+    return { "balance": balance, "transactions": transactions}
 
 
 def update_status(db: db_dependency, user: user_dependency):
