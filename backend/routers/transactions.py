@@ -76,7 +76,7 @@ async def process_transaction(db: db_dependency, process_transaction_request_bod
 @router.get("/pending", status_code=status.HTTP_200_OK)
 async def get_transactions(db: db_dependency, user: user_dependency):
 
-    # update_status(db, user)
+    update_status(db, user)
     pending_transactions = db.query(Transactions)\
     .filter_by(owner_id=user.id, status=TransactionStatus.PENDING)\
     .order_by(Transactions.date.desc())\
@@ -87,7 +87,7 @@ async def get_transactions(db: db_dependency, user: user_dependency):
 @router.get("/completed", status_code=status.HTTP_200_OK)
 async def get_transactions(db: db_dependency, user: user_dependency):
 
-    # update_status(db, user)
+    update_status(db, user)
     completed_transactions = db.query(Transactions)\
     .filter_by(owner_id=user.id, status=TransactionStatus.COMPLETED)\
     .order_by(Transactions.date.desc())\
@@ -96,17 +96,13 @@ async def get_transactions(db: db_dependency, user: user_dependency):
     return { "completedBalance": balance, "transactions": completed_transactions}
 
 
-# def update_status(db: db_dependency, user: user_dependency):
-#     pending_transactions = db.query(Transactions)\
-#     .filter_by(owner_id=user.id, status=TransactionStatus.PENDING)\
-#     .all()
+def update_status(db: db_dependency, user: user_dependency):
+    db.query(Transactions)\
+    .filter_by(owner_id=user.id, status=TransactionStatus.PENDING,)\
+    .filter(datetime.now() - timedelta(hours=48)>= Transactions.date)\
+    .update({'status': TransactionStatus.COMPLETED})
 
-#     for transaction in pending_transactions:
-#         if datetime.now() >= transaction.date + timedelta(hours=48):  
-#             # setattr(transaction, 'status', TransactionStatus.PENDING)
-#             transaction.status = TransactionStatus.COMPLETED
-#             db.execute(transaction)
-#             db.commit()
+    db.commit()
 
 def calculate_balance(data: Transactions):
     total = 0
