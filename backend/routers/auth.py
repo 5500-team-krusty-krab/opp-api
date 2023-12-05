@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 
+from helper import *
 from models.models import Users
 from DB import get_db
 from db.database import SessionLocal
@@ -30,9 +31,10 @@ class UserSignupParam(BaseModel):
 @router.post("/signup")
 async def user_signup(param: UserSignupParam, db: db_dependency):
 
-    #TODO validate email format
-    # if invalid email format
-    # raise HTTP ("invalid email")
+    validate_email_presence(param.email)
+    validate_email_format(param.email)
+    validate_password_length(param.password)
+    validate_password_content(param.password)
 
     existing_user = db.query(Users).filter(
         Users.email == param.email,
