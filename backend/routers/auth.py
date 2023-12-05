@@ -1,4 +1,4 @@
-
+"""Authentication router for handling user signup and login."""
 from datetime import timedelta, datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -24,13 +24,20 @@ ALGORITHM = "HS256"
 db_dependency = Annotated[Session, Depends(get_db)]
 
 class UserSignupParam(BaseModel):
+    """Parameters required for user signup."""
     name:str
     email: str
     password: str
 
 @router.post("/signup")
 async def user_signup(param: UserSignupParam, db: db_dependency):
+    """
+    Endpoint for user signup.
 
+    :param param: UserSignupParam - Signup details.
+    :param db: DbDependency - Database session dependency.
+    :return: Dict indicating success status.
+    """
     validate_email_presence(param.email)
     validate_email_format(param.email)
     validate_password_length(param.password)
@@ -59,11 +66,19 @@ async def user_signup(param: UserSignupParam, db: db_dependency):
     return {"success":True}
 
 class UserLoginParam(BaseModel):
+    """Parameters required for user login."""
     email: str
     password: str
 
 @router.post("/login")
 async def user_login(param: UserLoginParam, db: db_dependency):
+    """
+    Endpoint for user login.
+
+    :param param: UserLoginParam - Login details.
+    :param db: DbDependency - Database session dependency.
+    :return: Dict with login message and access token.
+    """
     
 
     user = authenticate_user(param.email, param.password, db)
@@ -83,6 +98,14 @@ async def user_login(param: UserLoginParam, db: db_dependency):
     
 
 def authenticate_user(email: str, password: str, db: Session):
+    """
+    Authenticate user by email and password.
+
+    :param email: str - User email.
+    :param password: str - User password.
+    :param db: Session - Database session.
+    :return: User object or False.
+    """
     user = db.query(Users).filter(
         Users.email == email,
     ).first()
@@ -94,6 +117,13 @@ def authenticate_user(email: str, password: str, db: Session):
     return user
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
+    """
+    Create a JWT access token.
+
+    :param data: dict - Data to encode in the token.
+    :param expires_delta: timedelta - Token expiry duration.
+    :return: str - Encoded JWT token.
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -104,6 +134,13 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)], db: db_dependency):
+    """
+    Get the current user based on the JWT token.
+
+    :param token: Annotated[str, Depends(oauth2_bearer)] - JWT token.
+    :param db: DbDependency - Database session dependency.
+    :return: User object.
+    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         userId: str = payload.get('userId')

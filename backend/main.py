@@ -1,15 +1,16 @@
+# main.py: Main application module for a FastAPI application, setting up routes and middleware.
+
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from models import models
 from db.database import engine
 from routers import auth, admin, transactions
 
-from fastapi.middleware.cors import CORSMiddleware
-
-
-# application
+# Create the FastAPI application instance
 app = FastAPI()
 
+# Configure CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,15 +19,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# sets up database defined in engine
+# Initialize the database
 models.Base.metadata.create_all(bind=engine)
 
-# Set API endpoints on router
+# Include routers for different parts of the application
 app.include_router(auth.router)
 app.include_router(transactions.router)
 app.include_router(admin.router)
 
-# Test
 @app.get("/")
 def read_root():
+    """
+    Root endpoint that returns a simple success message.
+    Useful for verifying if the application is running correctly.
+    """
     return {"Docker": "Success"}
+
