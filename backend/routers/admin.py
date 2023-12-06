@@ -1,16 +1,16 @@
 # admin.py: Router for admin-related operations in a FastAPI application
 
 from typing import Annotated
-from DB import get_db
-from helper import *
+from backend.DB import get_db
+from backend.helper import *
 
 
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 from sqlalchemy.orm import Session
 
-from models.models import Users
-from db.database import SessionLocal
+from backend.models.models import Users
+from backend.db.database import SessionLocal
 
 
 

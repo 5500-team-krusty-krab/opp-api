@@ -6,10 +6,10 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 
-from helper import *
-from models.models import Users
-from DB import get_db
-from db.database import SessionLocal
+from backend.helper import *
+from backend.models.models import Users
+from backend.DB import get_db
+from backend.db.database import SessionLocal
 from passlib.context import CryptContext
 from typing import Annotated
 

@@ -9,11 +9,11 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
-from models.models import Transactions, TransactionStatus
-from validate import validate_card
-from check_fund import check_fund_card
-from DB import get_db
-from routers.auth import get_current_user
+from backend.models.models import Transactions, TransactionStatus
+from backend.validate import validate_card
+from backend.check_fund import check_fund_card
+from backend.DB import get_db
+from backend.routers.auth import get_current_user
 from passlib.context import CryptContext
 
 

@@ -4,8 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.models import models
-from db.database import engine
-from routers import auth, admin, transactions
+from backend.db.database import engine
+from backend.routers import auth, admin, transactions
 
 # Create the FastAPI application instance
 app = FastAPI()

@@ -1,4 +1,4 @@
-from db.database import Base
+from backend.db.database import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, DateTime, Enum
 from enum import Enum as PyEnum
 

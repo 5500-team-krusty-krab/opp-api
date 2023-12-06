@@ -1,6 +1,6 @@
 """Module for database session handling."""
 
-from db.database import SessionLocal
+from backend.db.database import SessionLocal
 
 def get_db():
     """
