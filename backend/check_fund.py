@@ -1,3 +1,5 @@
+"""Module for checking fund availability and fraud detection in card transactions."""
+
 import requests
 from typing import Tuple
 
@@ -28,10 +30,4 @@ def check_fund_card(card_number: str, card_type: str, amount: float) -> Tuple[bo
     
     return True, "sufficient amount"
 
-    # if card_type == 'credit':
-    #     return False, "Card type must be a debit card"
-    # elif data.get('amt') < amount:
-    #     return False, "insufficient amount"
-    # else:
-    #     return True, "sufficient amount"
   

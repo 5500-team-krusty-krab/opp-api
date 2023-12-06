@@ -1,5 +1,5 @@
 from db.database import Base
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float, DateTime, Enum
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, DateTime, Enum
 from enum import Enum as PyEnum
 
 class TransactionStatus(PyEnum):
@@ -22,10 +22,9 @@ class Transactions(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     card_type = Column(String)
-    hashed_card_number = Column(String)
+    card_number = Column(String)
     description = Column(String)
     amount = Column(Float)
-    # complete = Column(Boolean, default=False)
     owner_id = Column(Integer, ForeignKey("users.id"))
     date = Column(DateTime)
     status = Column(Enum(TransactionStatus), default=TransactionStatus.PENDING)

@@ -1,0 +1,22 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request: 
+    branches: [main]
+  
+jobs:
+  build
+
+    runs-on: ubuntu-latest
+    strategy:
+    matrix:
+      python-verson: [3.9]
+
+    steps:
+      -uses: actions/checkout
+      -name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-

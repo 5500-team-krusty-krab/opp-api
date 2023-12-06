@@ -1,3 +1,5 @@
+# validate.py: Module for validating credit or debit card numbers using an external API.
+
 import requests
 from typing import Tuple
 
@@ -14,7 +16,8 @@ def validate_card(card_number: str, card_type: str) -> Tuple[bool, str]:
     response = requests.post(
         VALIDATION_URL,
         json={"card_number": card_number},
-        headers={'Content-Type': 'application/json'}
+        headers={'Content-Type': 'application/json'},
+        timeout=10  # Timeout set to 10 seconds
     )
 
     if response.status_code != 200:
@@ -27,7 +30,8 @@ def validate_card(card_number: str, card_type: str) -> Tuple[bool, str]:
 
     if card_type == 'debit':
         return True, 'Successfully processed'
-    elif card_type == 'credit':
+    if card_type == 'credit':
         return True, 'It is into pending status'
-    else:
-        return False, 'Invalid card type'
+
+    return False, 'Invalid card type'
+
