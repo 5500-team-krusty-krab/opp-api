@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from models import models
+from backend.models import models
 from db.database import engine
 from routers import auth, admin, transactions
 
