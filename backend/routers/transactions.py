@@ -84,7 +84,6 @@ async def get_transactions(db: DbDependency, user: UserDependency,
     update_status(db, user)
     status_value = TransactionStatus.PENDING if status == "pending" else TransactionStatus.COMPLETED
     query = db.query(Transactions).filter_by(owner_id=user.id, status=status_value).order_by(Transactions.date.desc())
-    print("status_value",status_value)
     if start:
         start_date_time = datetime.strptime(start, "%Y-%m-%d").replace(hour=0, minute=0, second=0)
         query = query.filter(Transactions.date >= start_date_time)
