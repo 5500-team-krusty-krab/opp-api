@@ -12,8 +12,10 @@ from dotenv import load_dotenv
 from models.models import Transactions, TransactionStatus
 from validate import validate_card
 from check_fund import check_fund_card
-from db.database import get_db
+from DB import get_db
 from routers.auth import get_current_user
+from passlib.context import CryptContext
+
 
 load_dotenv()  # Load environment variables from .env file.
 
@@ -36,7 +38,7 @@ class ProcessTransactionRequestBody(BaseModel):
 @router.post("/new", status_code=status.HTTP_201_CREATED)
 async def process_transaction(db: DbDependency, 
                               process_transaction_request_body: ProcessTransactionRequestBody, 
-                              user: UserDependency) -> dict:
+                              user: UserDependency):
     """
     Process a new transaction based on the provided request body and user details.
     """
@@ -73,16 +75,16 @@ async def process_transaction(db: DbDependency,
 
 @router.get("/", status_code=status.HTTP_200_OK)
 async def get_transactions(db: DbDependency, user: UserDependency,
-                           transaction_status: str = "completed",
+                           status: str = "completed",
                            start: str = None, 
-                           end: str = None) -> dict:
+                           end: str = None):
     """
     Retrieve a list of transactions for the current user, filtered by status and date range.
     """
     update_status(db, user)
-    status_value = TransactionStatus.PENDING if transaction_status == "pending" else TransactionStatus.COMPLETED
+    status_value = TransactionStatus.PENDING if status == "pending" else TransactionStatus.COMPLETED
     query = db.query(Transactions).filter_by(owner_id=user.id, status=status_value).order_by(Transactions.date.desc())
-    
+    print("status_value",status_value)
     if start:
         start_date_time = datetime.strptime(start, "%Y-%m-%d").replace(hour=0, minute=0, second=0)
         query = query.filter(Transactions.date >= start_date_time)
