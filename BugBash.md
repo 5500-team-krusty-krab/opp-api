@@ -1,12 +1,12 @@
-## BugBush
+# BugBush
 
-# App url:
+### App url:
 
 ```
 http://kkpayment.s3.us-west-2.amazonaws.com/build/index.html
 ```
 
-# Screenshots:
+### Screenshots:
 
 login:
 ![login](./design-documents/screenshots/login-page.png)
@@ -19,7 +19,7 @@ view completed transactions:
 view pending transactions:
 ![pending transactions](./design-documents/screenshots/pending-transactions-page.png)
 
-# Github Issues page:
+### Github Issues page:
 
 ```
 https://github.com/5500-team-krusty-krab/opp-api/blob/master/.github/ISSUE_TEMPLATE/bug_report.md
