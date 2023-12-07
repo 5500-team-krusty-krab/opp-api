@@ -1,5 +1,7 @@
 # Project File
 
+### AWS public URL: http://kkpayment.s3.us-west-2.amazonaws.com/build/index.html
+
 ## Deployment
 
 ### Docker
@@ -27,8 +29,6 @@ docker run -d --name mycontainer -p 8000:8000 myimage
 
 
 ## Deploy To AWS
-
-### AWS EC2 instance's public URL: http://ec2-54-221-94-105.compute-1.amazonaws.com:8080
 
 ### Building and Pushing Docker Image to ECR
 
