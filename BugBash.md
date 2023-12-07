@@ -1,4 +1,4 @@
-# BugBush
+# BugBash
 
 ### App url:
 
