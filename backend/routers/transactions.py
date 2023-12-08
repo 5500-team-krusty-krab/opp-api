@@ -15,6 +15,7 @@ from backend.check_fund import check_fund_card
 from backend.DB import get_db
 from backend.routers.auth import get_current_user
 from passlib.context import CryptContext
+from backend.helper import *
 
 
 load_dotenv()  # Load environment variables from .env file.
@@ -49,6 +50,9 @@ async def process_transaction(db: DbDependency,
     )
     if not is_valid:
         raise HTTPException(status_code=400, detail=message)
+    
+    # Check if the amount is positive
+    check_positive_amount(process_transaction_request_body.amount)
 
     # Check if sufficient funds are available
     is_sufficient, message = check_fund_card(
