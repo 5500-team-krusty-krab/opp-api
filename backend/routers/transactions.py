@@ -52,7 +52,8 @@ async def process_transaction(db: DbDependency,
         raise HTTPException(status_code=400, detail=message)
     
     # Check if the amount is positive
-    check_positive_amount(process_transaction_request_body.amount)
+    if process_transaction_request_body.amount <=0:
+        raise HTTPException(status_code=400, detail="Please enter a positive amount.")
 
     # Check if sufficient funds are available
     is_sufficient, message = check_fund_card(

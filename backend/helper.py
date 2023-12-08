@@ -55,9 +55,9 @@ def validate_email_format(email: str) -> None:
             detail="Invalid email format."
         )
     
-def check_positive_amount(amount):
-    if amount <=0:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Please enter a positive amount."
-        )
+# def check_positive_amount(amount):
+#     if amount <=0:
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail="Please enter a positive amount."
+#         )

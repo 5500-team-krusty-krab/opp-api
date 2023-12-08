@@ -69,8 +69,9 @@ docker tag <image> <ECR-URI>/<tag>
 From the root of your repository, run:
 
 ```bash
-aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin <REPO_HOST>
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <REPO_HOST>
 ```
+Replace region as your region; replace <REPO_HOST> as the ECR container URI
 
 #### 5. Push the tagged image to ECR:
 
@@ -79,6 +80,7 @@ From the root of your repository, run:
 ```bash
 docker push <ECR-URI>:<tag>
 ```
+<ECR-URI>:<tag> is the ECR container URI
 
 ### Running the Docker Container on EC2
 
